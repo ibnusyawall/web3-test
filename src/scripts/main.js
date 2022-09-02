@@ -10,7 +10,8 @@ $(document).ready(function() {
         alert('Browser not supported.');
     }
 
-    connect.on('click', function(ev) {
+    if (typeof window.ethereum !== "undefined") {
+      connect.on('click', function(ev) {
         ethereum
            .request({ method: "eth_requestAccounts" })
            .then((accounts) => {
@@ -18,21 +19,23 @@ $(document).ready(function() {
                connected_wallet.show();
                connected_wallet.text(`Wallet [ETH]: ${account}`);
 
-               var web3 = new Web3(window.ethereum);
-
-               web3.eth.getAccounts()
-                  .then(data => {
-                      web3.eth.getBalance(data[0])
-                          .then(balance => {
-                              connected_balance.show();
-                              connected_balance.text(`Balance: ${balance}`);
-                          })
-                          .catch(e => alert(e))
-                  })
-                  .catch(e => alert(e))
+               if (!!account) {
+                   var web3 = new Web3(window.ethereum);
+                   web3.eth.getAccounts()
+                       .then(data => {
+                           web3.eth.getBalance(data[0])
+                               .then(balance => {
+                                   connected_balance.show();
+                                   connected_balance.text(`Balance: ${balance}`);
+                               })
+                               .catch(e => alert(e))
+                       })
+                       .catch(e => alert(e))
+               }
            })
            .catch(e => {
                alert(`Fail connect to wallet address:( | code: ${e.code}`);
            })
-    });
+      });
+    }
 });
